@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-x@@fkq@*bqe7#4z(ks+_@%ar(reugi@lev8@hae5p(n_pyi-uz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -60,7 +60,7 @@ SOCIALACCOUNT_PROVIDERS = {
         # credentials, or list them here:
         'APP': {
             'client_id': '185495233718-294a7s4i8dosf9op66ccesv831hpp5ld.apps.googleusercontent.com',
-            
+            'secret': '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',
             'key': ''
         }
     }
