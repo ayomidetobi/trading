@@ -111,10 +111,14 @@
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                       <i class="bi bi-currency-dollar"></i>
                     </div>
+                    {% if total_balance > 100 %}
+                    <h6> &#x24;{{ total_balance|floatformat:2 }}</h6>
+                    <span class="text-success small pt-1 fw-bold">{{percentage_increase_balance}}%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                    {% else %}
                     <div class="ps-3">
                       <h6> &#x24;{{ total_balance|floatformat:2 }}</h6>
-                      <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-
+                      <span class="text-danger small pt-1 fw-bold">{{percentage_decrease_balance}}%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -148,9 +152,13 @@
                       <i class="bi bi-graph-up"></i>
                     </div>
                     <div class="ps-3">
+                      {% if total_profit_loss > 0 %}
                       <h6>&#36;{{ total_profit_loss|floatformat:2 }}</h6>
-                      <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
-
+                      <span class="text-success small pt-1 fw-bold">{{percentage_increase|floatformat:2}}%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                      {% else %}
+                      <h6>&#36;{{ total_profit_loss|floatformat:2 }}</h6>
+                      <span class="text-danger small pt-1 fw-bold">{{percentage_decrease|floatformat:2}}%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
+                      {% endif %}
                     </div>
                   </div>
 
@@ -191,9 +199,6 @@
                     document.addEventListener("DOMContentLoaded", () => {
                       new ApexCharts(document.querySelector("#reportsChart"), {
                         series: [{
-                          name: 'Trades',
-                          data: [31, 40, 28, 51, 42, ],
-                        }, {
                           name: 'Profit/Loss',
                           data: pnl
                         }],
@@ -211,7 +216,7 @@
                         markers: {
                           size: 4
                         },
-                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                        colors: ['#2eca6a', '#ff771d'],
                         fill: {
                           type: "gradient",
                           gradient: {
@@ -254,14 +259,12 @@
                   success: function(data) {
                     // Update chart data using the received data
                     // Replace the 'chart-id' with your actual chart ID
+                    
                     let data_pnl=  {{ profit_loss_data |safe}};
                     let time= "{{trade.timestamp}}";
                     let categories = {{ time_data|safe }};
                     new ApexCharts(document.querySelector("#reportsChart"), {
-                      updateSeries: [{
-                        name: 'Trades',
-                        data: [31, 40, 28, 51, 42],
-                      }, {
+                      updateSeries: [ {
                         name: 'Profit/Loss',
                         data: data_pnl
                       }],
@@ -279,7 +282,7 @@
                       markers: {
                         size: 4
                       },
-                      colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                      colors: ['#2eca6a', '#ff771d'],
                       fill: {
                         type: "gradient",
                         gradient: {
@@ -312,11 +315,12 @@
                     console.error(error);
                   }
                 });
-              }
+                
+              };
 
               $(document).ready(function() {
                 // Update chart data every minute
-                setInterval(updateChartData, 60000);
+                setInterval(updateChartData, 10000);
               });
             </script>
             <script>
