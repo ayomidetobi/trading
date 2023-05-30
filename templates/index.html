@@ -256,6 +256,9 @@
                   url: "{% url 'update_chart_data' %}",
                   type: "GET",
                   dataType: "json",
+                  headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                  },
                   success: function(data) {
                     // Update chart data using the received data
                     // Replace the 'chart-id' with your actual chart ID
