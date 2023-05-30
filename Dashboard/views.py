@@ -13,7 +13,6 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from celery import shared_task
 from django.http import HttpResponse, JsonResponse
 import random
-from .task import generate_random_trades_periodically,generate_random_trade
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
@@ -73,13 +72,32 @@ class IndexView(LoginRequiredMixin,TemplateView):
         percentage_increase = round(((total_balance - account_balance) / account_balance) * 100, 2)
         percentage_decrease = round(((account_balance - total_balance) / account_balance) * 100, 2)
         return percentage_increase, percentage_decrease
+
+    def generate_random_trade(self):
+        profit_loss = round(random.uniform(-100, 100), 2)
+        trade = Trade(trader=self.request.user, profit_loss=profit_loss)
+        trade.save()
+        return trade
     
+
+    def generate_random_trades_periodically(self, minutes):
+        trade=0
+        while True:
+            total_balance = Trade.get_total_balance(self.request.user)
+            total_trade_count = Trade.get_total_trade(self.request.user)
+
+            if total_balance < 0 or total_trade_count > 200:
+                break
+            
+            trade=generate_random_trade.delay(self)
+            time.sleep(minutes * 60)
+        return trade
 class UpdateChartDataView(View):
      def get(self, request, *args, **kwargs):
         view = IndexView.as_view()
         response = view(request, *args, **kwargs)
         generate_random_trade(self)
-        random_trades = generate_random_trades_periodically.delay(self, minutes=1.0)
+        random_trades = IndexView.generate_random_trades_periodically(self, minutes=1.0)
         new_profit_loss_data = response.context_data['profit_loss_data']
         time_data = response.context_data['time_data']
         
