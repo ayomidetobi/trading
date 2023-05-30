@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'Dashboard',
     'debug_toolbar',
     'widget_tweaks',
-    'rest_framework',
+    # 'rest_framework',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
